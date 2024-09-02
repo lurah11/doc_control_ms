@@ -26,6 +26,7 @@ class Accounts(models.Model):
     creator = models.BooleanField(default=True)
     approver = models.BooleanField(default=False)
     acknowledger = models.BooleanField(default=False)
+    doc_controller = models.BooleanField(default=False)
     supervisor = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 
