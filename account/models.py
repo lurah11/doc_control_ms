@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 class Department(models.Model): 
     DEPT_CHOICES = [
@@ -37,3 +38,6 @@ class Accounts(models.Model):
 
     def __str__(self): 
         return f"account_id_{self.id}--{self.user.username}"
+    def clean(self):
+        if self.supervisor and self.supervisor == self:
+            raise ValidationError("A user cannot supervise themselves.")
