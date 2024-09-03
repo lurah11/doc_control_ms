@@ -14,6 +14,7 @@ class DocumentManager(models.Manager):
 class Document (models.Model): 
     objects = DocumentManager()
     LEVEL_CHOICES = [(1,1),(2,2),(3,3)]
+    STATUS_CHOICES = [('active','active'),('obsolete','obsolete'),('destroyed','destroyed'),('draft','draft')]
     name = models.CharField(max_length=200)
     date = models.DateField()
     dept = models.ForeignKey(Department,on_delete=models.SET_NULL, null=True)
@@ -24,6 +25,7 @@ class Document (models.Model):
     number = models.CharField(max_length=200)
     rev_number = models.IntegerField(default=0)
     level = models.IntegerField(choices=LEVEL_CHOICES,default=3)
+    upload_doc = models.FileField(null=True,blank=True)
     prev_version = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 
@@ -37,6 +39,7 @@ class Document (models.Model):
         related_name='children', 
         blank=True
     )
+    status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='draft')
     metadata = models.JSONField(null=True,blank=True)
 
     def __str__(self): 
@@ -67,11 +70,21 @@ class Document (models.Model):
         
 
 class Submission(models.Model):
+    STATUS_CHOICE = [
+        ('draft','draft'),
+        ('onreview','onreview'),
+        ('onack','onack'),
+        ('approved','approved'),
+        ('rejected','rejected')
+    ]
     document = models.ForeignKey(Document,on_delete=models.CASCADE)
     submit_date = models.DateTimeField(auto_now_add=True)
     submiter = models.ForeignKey(Accounts,on_delete=models.DO_NOTHING)
     approved_date = models.DateTimeField(null=True,blank=True)
     notes = models.CharField(max_length=2000)
+    status = models.CharField(max_length=20,choices=STATUS_CHOICE,default='draft')
+    status_update = models.DateTimeField(auto_now=True)
+    metadata = models.JSONField(null=True,blank=True)    
 
     def __str__(self): 
         return f"submission_id_{self.id}-{self.submit_date}({self.document.number}-{self.document.rev_number} {self.document.name})"
