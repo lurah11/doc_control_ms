@@ -1,1 +1,22 @@
-<button>hei</button>
+<div class="container">
+    <div class="row align-items-end justify-content-end">
+        <div class="col-md-9">
+            <h2 class="text-primary">Document Control Management System</h2>
+        </div>
+        {% if user.is_authenticated %}
+                <div class="col-md-3">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          {{user.username}}
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                          <li><a class="dropdown-item" href="{% url 'password-change' %}">Change PAssword</a></li>
+                          <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                      </div>
+                </div>
+        {% endif %}
+    </div>
+
+</div>
