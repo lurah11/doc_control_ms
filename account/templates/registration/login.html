@@ -7,6 +7,9 @@
       <div class="col">
           <div class="card">
               <div class="card-body p-4">
+                {% if form.errors %}
+                <p class="text-danger" style="font-size: xx-small;">Username and Password didn't match</p>
+                {% endif %}
                   <h3 class="card-title text-center mb-4">Login</h3>
                   <form action="{% url 'login' %}" method="post">
                     {% csrf_token %}
@@ -27,10 +30,10 @@
                       <div class="d-flex justify-content-between align-items-center">
                           <button type="submit" class="btn btn-primary">Login</button> 
                           <p class="mb-0 mx-3">OR</p>
-                          <button type="submit" class="btn btn-success">Register</button>
+                          <a href="{% url 'register' %}" class="btn btn-success">Register</a>
                       </div>
                       <div class="d-flex align-items-center justify-content-center">
-                        <a href="/password-reset" class="btn btn-link">Forgot Password?</a>
+                        <a href="{% url 'password-reset' %}" class="btn btn-link">Forgot Password?</a>
                       </div>
                   </form>
               </div>

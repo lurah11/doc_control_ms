@@ -1,12 +1,13 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from django.views import View
-from .forms import RegisterForm,CustomPWChangeForm
+from .forms import *
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from .models import Accounts,Department
-from django.urls import reverse
-from django.contrib.auth.views import LogoutView,PasswordChangeView
+from django.urls import reverse,reverse_lazy
+from django.contrib.auth.views import *
+from django.contrib import messages
 
 class RegisterView(View): 
     def get(self,request): 
@@ -29,10 +30,42 @@ class RegisterView(View):
             account.save()
             return JsonResponse({'redirect':reverse('login')})
 
-class CustomPWChangeView(PasswordChangeView): 
+class CustomPWChangeView(PasswordChangeView):
     template_name = 'registration/custom_password_change_form.html'
     form_class = CustomPWChangeForm
+    success_url = reverse_lazy('dcc:home-view')  # Redirect after successful password change
 
+    def form_valid(self, form):
+        super().form_valid(form)
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+
+class CustomPWResetView(PasswordResetView): 
+    template_name = 'registration/custom_password_reset_form.html'
+    form_class = CustomPWResetForm
+    email_template_name = 'registration/custom_password_reset_email.html'
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    
+class CustomPWResetConfirmView(PasswordResetConfirmView): 
+    template_name = 'registration/custom_password_reset_confirm.html'
+    form_class = CustomPWResetConfirmForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        super().form_valid(form)
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 
 

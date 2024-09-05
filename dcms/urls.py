@@ -16,8 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from account.views import RegisterView, CustomPWChangeView
-from django.contrib.auth.views import LoginView,LogoutView,PasswordChangeView
+from account.views import *
+from django.contrib.auth.views import LoginView,LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +25,7 @@ urlpatterns = [
     path("accounts/register/",RegisterView.as_view(),name='register'), 
     path("accounts/login/", LoginView.as_view(),name='login'),
     path("accounts/password_change/",CustomPWChangeView.as_view(),name='password-change'),
+    path("accounts/password_reset",CustomPWResetView.as_view(),name='password-reset'),
+    path("accounts/password_confirm/<uidb64>/<token>",CustomPWResetConfirmView.as_view(),name='password-confirm'),
     path("dcc",include('dcc.urls', namespace='dcc'))
 ]
