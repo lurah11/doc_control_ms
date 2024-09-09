@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+        .td-font-small {
+            font-size:x-small;
+            
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h4>Document List</h4>
+    {% if documents.empty %}
+    <p class="text text-danger">No Documents to Show </p>
+    {% else %}
+    <table class="table p-0">
+        <thead>
+          <tr>
+            <th class="td-font-small p-0 m-0" scope="col">#</th>
+            <th class="td-font-small p-0 m-0" scope="col">Doc. Number</th>
+            <th class="td-font-small p-0 m-0" scope="col">Name</th>
+            <th class="td-font-small p-0 m-0" scope="col">Department</th>
+            <th class="td-font-small p-0 m-0" scope="col">PIC</th>
+            <th class="td-font-small p-0 m-0" scope="col">date</th>
+            <th class="td-font-small p-0 m-0" scope="col">status</th>
+            <th class="td-font-small p-0 m-0" scope="col">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+            <tr>
+                <td class="td-font-small p-0 m-0">{{forloop.counter}}</td>
+                <td class="td-font-small p-0 m-0">{{document.number}}(rev.{{document.rev_number}})</td>
+                <td class="td-font-small p-0 m-0">{{document.name}}</td>
+                <td class="td-font-small p-0 m-0">{{document.dept.name}}</td>
+                <td class="td-font-small p-0 m-0"><pre class="m-0">created by : {{document.creator.user.first_name}} {{document.creator.user.last_name}}
+approved by : {{document.approver.user.first_name}} {{document.approved.user.last_name}}
+acknowledged by : {{document.acknowledger.user.first_name}} {{document.acknowledger.user.last_name}}</pre>
+                    
+                </td>
+                <td class="td-font-small p-0 m-0">{{document.date}}</td>
+                <td class="td-font-small p-0 m-0">{{document.status}}</td>
+                <td class="td-font-small p-0 m-0"><a href="#"> id={{document.id}}</a></td>
+              </tr>
+            {% endfor %}
+
+        </tbody>
+      </table>
+    {% endif %}
+{% endblock %}

@@ -43,7 +43,7 @@ class Document (models.Model):
     metadata = models.JSONField(null=True,blank=True)
 
     def __str__(self): 
-        return f"document_id_{self.id}-{self.number}-{self.rev_number}--{self.name}"
+        return f"document_id_{self.id}-{self.number}-{self.rev_number}--{self.name}(lv. {self.level})"
     
     def _validate_parent_level(self): 
         if self.parents.exists(): 

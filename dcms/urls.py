@@ -27,5 +27,5 @@ urlpatterns = [
     path("accounts/password_change/",CustomPWChangeView.as_view(),name='password-change'),
     path("accounts/password_reset",CustomPWResetView.as_view(),name='password-reset'),
     path("accounts/password_confirm/<uidb64>/<token>",CustomPWResetConfirmView.as_view(),name='password-confirm'),
-    path("dcc",include('dcc.urls', namespace='dcc'))
+    path("",include('dcc.urls', namespace='dcc'))
 ]

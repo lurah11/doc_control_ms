@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Document Details</h2>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Name</strong></td>
+                <td>{{ document.name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Date</strong></td>
+                <td>{{ document.date }}</td>
+            </tr>
+            <tr>
+                <td><strong>Department</strong></td>
+                <td>{{ document.dept.name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Creator</strong></td>
+                <td>{{ document.creator.user.first_name }} {{document.creator.user.last_name}}</td>
+            </tr>
+            <tr>
+                <td><strong>Approver</strong></td>
+                <td>{{ document.approver.user.first_name }} {{document.approver.user.last_name}}</td>
+            </tr>
+            <tr>
+                <td><strong>Acknowledger</strong></td>
+                <td>{{ document.acknowledger.user.first_name }} {{document.acknowledger.user.last_name}}</td>
+            </tr>
+            <tr>
+                <td><strong>Document Controller</strong></td>
+                <td>{{ document.doc_controller.user.first_name }} {{document.doc_controller.user.last_name}}</td>
+            </tr>
+            <tr>
+                <td><strong>Number</strong></td>
+                <td>{{ document.number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Revision Number</strong></td>
+                <td>{{ document.rev_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Level</strong></td>
+                <td>{{ document.level }}</td>
+            </tr>
+            <tr>
+                <td><strong>Uploaded Document</strong></td>
+                <td>
+                    {% if document.upload_doc %}
+                        <a href="{{ document.upload_doc.url }}" class="btn btn-primary" target="_blank">{{ document.upload_doc.name }}</a>
+                    {% else %}
+                        No file uploaded
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Previous Version</strong></td>
+                <td>{{ document.prev_version }}</td>
+            </tr>
+            <tr>
+                <td><strong>Parents</strong></td>
+                <td>
+                    {% if document.parents.all %}
+                        {% for parent in document.parents.all %}
+                            {{ parent }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        No parents
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Status</strong></td>
+                <td>{{ document.status }}</td>
+            </tr>
+            <tr>
+                <td><strong>Metadata</strong></td>
+                <td>{{ document.metadata|json_script:"metadata" }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
