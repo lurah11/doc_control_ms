@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path,include
 from account.views import *
 from django.contrib.auth.views import LoginView,LogoutView
+from django.conf.urls.static import static 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,3 +30,7 @@ urlpatterns = [
     path("accounts/password_confirm/<uidb64>/<token>",CustomPWResetConfirmView.as_view(),name='password-confirm'),
     path("",include('dcc.urls', namespace='dcc'))
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

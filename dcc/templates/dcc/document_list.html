@@ -42,7 +42,7 @@ acknowledged by : {{document.acknowledger.user.first_name}} {{document.acknowled
                 </td>
                 <td class="td-font-small p-0 m-0">{{document.date}}</td>
                 <td class="td-font-small p-0 m-0">{{document.status}}</td>
-                <td class="td-font-small p-0 m-0"><a href="#"> id={{document.id}}</a></td>
+                <td class="td-font-small p-0 m-0"><a href="{% url 'dcc:document-detail-view' document.id%}"> id={{document.id}}</a></td>
               </tr>
             {% endfor %}
 

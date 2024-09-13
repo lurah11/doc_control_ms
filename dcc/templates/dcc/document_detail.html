@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<style>
+    .scrollable-list {
+        max-height: 400px; 
+        overflow-y: auto; 
+    }
+    table,th,td,tr {
+        font-size: x-small;
+    }
+    .small-font {
+        font-size: x-small;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Document Details</h2>
+    <h4 class="mb-4">Document Details</h4>
     <table class="table table-bordered table-striped">
         <thead class="table-dark">
             <tr>
@@ -55,7 +70,7 @@
                 <td><strong>Uploaded Document</strong></td>
                 <td>
                     {% if document.upload_doc %}
-                        <a href="{{ document.upload_doc.url }}" class="btn btn-primary" target="_blank">{{ document.upload_doc.name }}</a>
+                        <a href="{{ document.upload_doc.url }}" class="btn btn-primary small-font" target="_blank">{{ document.get_filename }}</a>
                     {% else %}
                         No file uploaded
                     {% endif %}
@@ -70,7 +85,7 @@
                 <td>
                     {% if document.parents.all %}
                         {% for parent in document.parents.all %}
-                            {{ parent }}{% if not forloop.last %}, {% endif %}
+                            <a href="{% url 'dcc:document-detail-view' parent.id %}">{{ parent }}</a>{% if not forloop.last %}<br> {% endif %}
                         {% endfor %}
                     {% else %}
                         No parents
@@ -84,6 +99,20 @@
             <tr>
                 <td><strong>Metadata</strong></td>
                 <td>{{ document.metadata|json_script:"metadata" }}</td>
+            </tr>
+            <tr>
+                <td><strong>Children</strong></td>
+                <td>
+                    <div class="container">
+                        <div class="scrollable-list bg-light p-3 border rounded">
+                            <ul class="list-group">
+                                {% for item in document.children.all %}
+                                    <a href="{% url 'dcc:document-detail-view' item.id %}">{{item.number}}_rev{{item.rev_number}}_{{item.name}} (id={{item.id}})</a>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>

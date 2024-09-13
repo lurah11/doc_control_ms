@@ -1,6 +1,7 @@
 from django.db import models
 from account.models import Department,Accounts
 from django.core.exceptions import ValidationError
+import os
 
 class DocumentManager(models.Manager):
     """Manager class to ensure that objects.create method will be validated by full_clean and custom save"""
@@ -10,6 +11,11 @@ class DocumentManager(models.Manager):
         instance.save()
         return instance
 
+
+def upload_to(instance, filename):
+        ext = filename.split('.')[-1]
+        filename = f'{instance.number}_rev{instance.rev_number}_{instance.name}_id_{instance.id}.{ext}'
+        return os.path.join('uploads', instance.dept.name, instance.name, filename)
 
 class Document (models.Model): 
     objects = DocumentManager()
@@ -25,7 +31,7 @@ class Document (models.Model):
     number = models.CharField(max_length=200)
     rev_number = models.IntegerField(default=0)
     level = models.IntegerField(choices=LEVEL_CHOICES,default=3)
-    upload_doc = models.FileField(null=True,blank=True)
+    upload_doc = models.FileField(null=True,blank=True,upload_to=upload_to)
     prev_version = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 
@@ -65,6 +71,8 @@ class Document (models.Model):
         self.full_clean()
         super().save(*args,**kwargs)
         self._validate_parent_level()
+    def get_filename(self):
+        return os.path.basename(self.upload_doc.name)
         
                     
         
