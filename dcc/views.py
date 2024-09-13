@@ -52,6 +52,18 @@ class DocumentCreateView(LoginRequiredMixin,TemplateView):
         user = context['user']
         context['form'] = kwargs.get('form', DocumentForm(user))
         return context
+    
+class DocParentSearchView(TemplateView): 
+    template_name = 'dcc/document_parent_search.html'
+
+    def get(self, request, *args, **kwargs):
+        level = request.GET.get('level',3)
+        q = Q(level__lte=level)
+        query = request.GET.get('query')
+        if query : 
+            q &=  Q(number__icontains=query) | Q(name__icontains=query) 
+        parents = Document.objects.filter(q)
+        return self.render_to_response(self.get_context_data(parents=parents))
 
 
    

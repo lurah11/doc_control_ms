@@ -4,6 +4,48 @@
 
 {% block content %}
 <h5>Document Submission form </h5>
-{% crispy form form.helper %}
+<form id="document-create-form" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+        {% if field.name != 'parents' %}
+            {{ field|as_crispy_field }}
+        {% endif %}
+    {% endfor %}
+    
+    <!-- Render the 'parents' field along with the search input separately -->
+    <div id="div_id_parents" class="mb-3">
+        {{ form.parents|as_crispy_field }}
+        <input type="text" id="search_parents" placeholder="Search parents..." 
+         style="margin-top: 10px; width: 100%;" />
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit">Submit</button>
+</form>
+
+
+<script>
+
+redirectResponse("document-create-form","{% url 'dcc:home-view' %}","The SOP has been added to draft, Now you need to start submission process !!!");
+
+    const level = document.getElementById('id_level')
+    const parent = document.getElementById('search_parents')
+    const selectParent = document.getElementById('id_parents')
+
+    parent.addEventListener('input',sendSearchData)
+    level.addEventListener('change',sendSearchData)
+
+    function sendSearchData(event){
+        console.log("triggered")
+        level_value = level.value;
+        query = parent.value;
+        url = `{% url 'dcc:doc-parent-search-view' %}?level=${level_value}&query=${query}`
+        fetch(url, {}).then((response)=>response.text())
+        .then(html=>{
+            selectParent.innerHTML = html
+        })
+        .catch(error=>alert(error))
+    }
+</script>
 
 {% endblock content %}
