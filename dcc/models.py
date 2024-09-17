@@ -28,7 +28,7 @@ class Document (models.Model):
     approver = models.ForeignKey(Accounts,on_delete=models.DO_NOTHING,related_name='approved')
     acknowledger = models.ForeignKey(Accounts, on_delete=models.DO_NOTHING,related_name='acknowledged')
     doc_controller = models.ForeignKey(Accounts,on_delete=models.DO_NOTHING,related_name='doc_controlled')
-    number = models.CharField(max_length=200)
+    number = models.CharField(max_length=200,null=True,blank=True)
     rev_number = models.IntegerField(default=0)
     level = models.IntegerField(choices=LEVEL_CHOICES,default=3)
     upload_doc = models.FileField(null=True,blank=True,upload_to=upload_to)
@@ -47,37 +47,44 @@ class Document (models.Model):
     )
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default='draft')
     metadata = models.JSONField(null=True,blank=True)
-
     def __str__(self): 
         return f"document_id_{self.id}-{self.number}-{self.rev_number}--{self.name}(lv. {self.level})"
-    
     def _validate_parent_level(self): 
         if self.parents.exists(): 
             for parent in self.parents.all():
                 if parent.level > self.level:
                     print("agustinussss")
                     raise ValidationError(f"Parent document '{parent}' must be at the same level or one level higher than the current document.")
-    
     def _validate_prev_version(self): 
         if not self.prev_version and self.rev_number != 0: 
             raise ValidationError(f"If you do not specify the previous revision, then you should give this document revision number 0 , not revision number {self.rev_number}")
         elif self.prev_version and (self.number != self.prev_version.number): 
                 raise ValidationError(f"The previous version must have the same number , previous version was {self.prev_version.number}")
-    
+    def _validate_rev_number(self): 
+        if self.rev_number < 0 : 
+            raise ValidationError(f"revision number can't be negative ")
     def clean(self):
-        self._validate_prev_version()
-    
+        self._validate_rev_number()
+        self._validate_prev_version()    
     def save(self,*args,**kwargs): 
         self.full_clean()
         super().save(*args,**kwargs)
         self._validate_parent_level()
     def get_filename(self):
-        return os.path.basename(self.upload_doc.name)
-        
-                    
+        return os.path.basename(self.upload_doc.name)                
         
 
 class Submission(models.Model):
+    document = models.ForeignKey(Document,on_delete=models.CASCADE)
+    submit_date = models.DateTimeField(auto_now_add=True)
+    submiter = models.ForeignKey(Accounts,on_delete=models.DO_NOTHING)
+    notes = models.CharField(max_length=2000)
+    metadata = models.JSONField(null=True,blank=True)    
+
+    def __str__(self): 
+        return f"submission_id_{self.id}-{self.submit_date.strftime('%Y%m%d')}({self.document.number}-{self.document.rev_number} {self.document.name})"
+
+class SubmissionInstance(models.Model): 
     STATUS_CHOICE = [
         ('draft','draft'),
         ('onreview','onreview'),
@@ -85,14 +92,13 @@ class Submission(models.Model):
         ('approved','approved'),
         ('rejected','rejected')
     ]
-    document = models.ForeignKey(Document,on_delete=models.CASCADE)
-    submit_date = models.DateTimeField(auto_now_add=True)
-    submiter = models.ForeignKey(Accounts,on_delete=models.DO_NOTHING)
+    submission = models.ForeignKey(Submission,on_delete=models.CASCADE)
     approved_date = models.DateTimeField(null=True,blank=True)
-    notes = models.CharField(max_length=2000)
     status = models.CharField(max_length=20,choices=STATUS_CHOICE,default='draft')
-    status_update = models.DateTimeField(auto_now=True)
-    metadata = models.JSONField(null=True,blank=True)    
+    updated = models.DateTimeField(auto_now=True)
+    notes = models.CharField(max_length=2000,null=True,blank=True)
+    metadata = models.JSONField(null=True,blank=True)
 
     def __str__(self): 
-        return f"submission_id_{self.id}-{self.submit_date}({self.document.number}-{self.document.rev_number} {self.document.name})"
+        return f"submit_history_id-{self.id}__submission_id-{self.id}__{self.status}"
+

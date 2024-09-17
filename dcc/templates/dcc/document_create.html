@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load form_tags %}
 
 
 {% block content %}
-<h5>Document Submission form </h5>
+
+<h5>Create Document Form </h5>
 <form id="document-create-form" method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -19,18 +21,33 @@
          style="margin-top: 10px; width: 100%;" />
     </div>
 
+    {% if form.errors %}
+        <div>
+
+        </div>
+    {% endif %}
+
     <!-- Submit button -->
     <button type="submit">Submit</button>
+
 </form>
 
 
 <script>
 
-redirectResponse("document-create-form","{% url 'dcc:home-view' %}","The SOP has been added to draft, Now you need to start submission process !!!");
+    window.addEventListener('load',function(){
+        {% if messages %}
+            {% for message in messages %}
+            alert("{{message}}")
+            {% endfor %}
+        {% endif %}        
+    })
 
     const level = document.getElementById('id_level')
     const parent = document.getElementById('search_parents')
     const selectParent = document.getElementById('id_parents')
+    
+    
 
     parent.addEventListener('input',sendSearchData)
     level.addEventListener('change',sendSearchData)

@@ -31,4 +31,14 @@
         </div>
         
     </div>
+
+    <script>
+    window.addEventListener('load',function(){
+        {% if messages %}
+            {% for message in messages %}
+            alert("{{message}}")
+            {% endfor %}
+        {% endif %}        
+    })
+    </script>
 {% endblock %}

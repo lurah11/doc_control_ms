@@ -15,13 +15,14 @@ function redirectResponse(elementid,redirect_url,message){
         .then(response => response.json())  // Parse the JSON response
         .then(data => {
             if (data['success']) {
-                // If the response is successful, show a success message
                 alert(message);
                 window.location.href=redirect_url
             } else {
-                // Handle validation errors
-                alert('There was an error. Please check your input.');
-                console.error(data.errors);  // You can also display the errors on the form
+                let alertMessage = "Please check these issues:\n";
+                const errors = JSON.parse(data.errors)
+                alertMessage += errors 
+                alert(alertMessage)
+      
             }
         })
         .catch(error => {
